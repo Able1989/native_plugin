@@ -18,7 +18,6 @@ class MethodChannelNativePlugin extends NativePluginPlatform {
   @override
   Future<int> createPipContentView({
     String status = '',
-    String hint = '点击返回应用',
     Uint8List? iconPng,
     String? videoTrackId,
   }) async {
@@ -26,7 +25,6 @@ class MethodChannelNativePlugin extends NativePluginPlatform {
       'createPipContentView',
       <String, dynamic>{
         'status': status,
-        'hint': hint,
         if (iconPng != null) 'iconPng': iconPng,
         if (videoTrackId != null && videoTrackId.isNotEmpty)
           'videoTrackId': videoTrackId,

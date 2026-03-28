@@ -80,7 +80,6 @@
             initWithRemoteVideoTrackId:(NSString *)videoTrackId];
       } else {
         NSString *status = args[@"status"] ?: @"";
-        NSString *hint = args[@"hint"] ?: @"点击返回应用";
         NSData *iconData = nil;
         id rawIcon = args[@"iconPng"];
         if ([rawIcon isKindOfClass:[FlutterStandardTypedData class]]) {
@@ -88,7 +87,6 @@
         }
         playerView =
             [[PlayerView alloc] initWithVoiceOverlayStatus:status
-                                                      hint:hint
                                               iconPngData:iconData];
       }
     } else {

@@ -73,9 +73,8 @@
   return self;
 }
 
-/// 与 Android 语音悬浮窗类似的卡片 UI：白底、绿描边、图标 + 状态 + 提示。
+/// 与 Android 语音悬浮窗类似的卡片 UI：白底、绿描边、图标 + 状态。
 - (instancetype)initWithVoiceOverlayStatus:(NSString *)status
-                                      hint:(NSString *)hint
                               iconPngData:(NSData *)iconPngData {
   if (self = [super init]) {
     [self rtc_attachTimebase];
@@ -109,28 +108,16 @@
     statusLab.text = status ?: @"";
     statusLab.textAlignment = NSTextAlignmentCenter;
     statusLab.font = [UIFont systemFontOfSize:15 weight:UIFontWeightMedium];
-    statusLab.textColor = [UIColor colorWithRed:7 / 255.0
-                                          green:193 / 255.0
-                                           blue:96 / 255.0
+    statusLab.textColor = [UIColor colorWithRed:18 / 255.0
+                                          green:107 / 255.0
+                                           blue:246 / 255.0
                                           alpha:1.0];
     statusLab.numberOfLines = 0;
-
-    NSString *hintText = (hint.length > 0) ? hint : @"点击返回应用";
-    UILabel *hintLab = [[UILabel alloc] init];
-    hintLab.text = hintText;
-    hintLab.textAlignment = NSTextAlignmentCenter;
-    hintLab.font = [UIFont systemFontOfSize:11 weight:UIFontWeightRegular];
-    hintLab.textColor = [UIColor colorWithRed:7 / 255.0
-                                        green:193 / 255.0
-                                         blue:96 / 255.0
-                                        alpha:0.6];
-    hintLab.numberOfLines = 0;
 
     self.statusLabel = statusLab;
 
     [stack addArrangedSubview:iconView];
     [stack addArrangedSubview:statusLab];
-    [stack addArrangedSubview:hintLab];
 
     [self addSubview:stack];
     CGFloat pad = 12.0;

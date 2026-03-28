@@ -31,7 +31,6 @@ abstract class NativePluginPlatform extends PlatformInterface {
 
   Future<int> createPipContentView({
     String status = '',
-    String hint = '点击返回应用',
     Uint8List? iconPng,
     String? videoTrackId,
   }) {

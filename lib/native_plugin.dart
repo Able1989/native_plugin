@@ -9,13 +9,11 @@ class NativePlugin {
 
   Future<int> createPipContentView({
     String status = '',
-    String hint = '点击返回应用',
     Uint8List? iconPng,
     String? videoTrackId,
   }) {
     return NativePluginPlatform.instance.createPipContentView(
       status: status,
-      hint: hint,
       iconPng: iconPng,
       videoTrackId: videoTrackId,
     );
