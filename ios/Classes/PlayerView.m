@@ -27,14 +27,10 @@
 }
 
 - (void)rtc_attachTimebase {
-  CMTimebaseRef timebase;
-  CMTimebaseCreateWithSourceClock(nil, CMClockGetHostTimeClock(), &timebase);
-  CMTimebaseSetTime(timebase, kCMTimeZero);
-  CMTimebaseSetRate(timebase, 1);
-  self.sampleBufferDisplayLayer.controlTimebase = timebase;
-  if (timebase) {
-    CFRelease(timebase);
-  }
+  // RtcPipVideoFrameRenderer 的 PTS 使用 CMClockGetHostTimeClock() 的绝对时间。
+  // 若将 controlTimebase 锚在 kCMTimeZero，与上述 PTS 不在同一时间线，层会认为帧尚未到点，
+  // PiP / 内联预览会卡住或几乎不刷新。nil 表示按文档立即展示入队样本（适合实时 WebRTC）。
+  self.sampleBufferDisplayLayer.controlTimebase = nil;
 }
 
 /// PiP 过渡用的轻量源视图（与 FLNativeView 配合）。

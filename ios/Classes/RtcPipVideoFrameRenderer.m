@@ -1,5 +1,6 @@
 #import "RtcPipVideoFrameRenderer.h"
 
+#import <CoreMedia/CMSampleBuffer.h>
 #import <WebRTC/RTCI420Buffer.h>
 #import <WebRTC/RTCYUVHelper.h>
 #import <WebRTC/RTCYUVPlanarBuffer.h>
@@ -115,6 +116,15 @@ static CMSampleBufferRef RtcPipMakeSampleBuffer(CVPixelBufferRef pixelBuffer) {
   CFRelease(formatDesc);
   if (err != noErr) {
     return NULL;
+  }
+  // 实时 WebRTC：避免 PiP / 系统合成仍按 PTS 排队，导致画面停在一帧。
+  CFArrayRef attachments =
+      CMSampleBufferGetSampleAttachmentsArray(sampleBuffer, YES);
+  if (attachments != NULL && CFArrayGetCount(attachments) > 0) {
+    CFMutableDictionaryRef att = (CFMutableDictionaryRef)CFArrayGetValueAtIndex(
+        attachments, 0);
+    CFDictionarySetValue(att, kCMSampleAttachmentKey_DisplayImmediately,
+                         kCFBooleanTrue);
   }
   return sampleBuffer;
 }
