@@ -2,7 +2,6 @@
 #import "FLNativeView.h"
 #import "PlayerView.h"
 
-#import <AVKit/AVKit.h>
 #import <Flutter/Flutter.h>
 
 @interface NativePlugin ()
@@ -13,34 +12,9 @@
 
 @implementation NativePlugin
 
-+ (void)updateAudioSession {
-  AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-  NSError *categoryError = nil;
-  if (@available(iOS 14.5, *)) {
-    [audioSession
-        setCategory:AVAudioSessionCategoryPlayback
-               mode:AVAudioSessionModeMoviePlayback
-            options:
-                AVAudioSessionCategoryOptionOverrideMutedMicrophoneInterruption
-              error:&categoryError];
-  } else {
-    // Fallback on earlier versions
-  }
-  if (categoryError) {
-    NSLog(@"Set audio session category error: %@",
-          categoryError.localizedDescription);
-  }
-  NSError *activeError = nil;
-  [audioSession setActive:YES error:&activeError];
-  if (activeError) {
-    NSLog(@"Set audio session active error: %@",
-          activeError.localizedDescription);
-  }
-}
-
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-  // PiP 所需的 session 在 createPipContentView 时再配置；启动时若设为 Playback，
-  // 会压过 WebRTC 通话需要的 PlayAndRecord，导致 iOS 无远端声音。
+  // 勿在 register 或 createPipContentView 里把 AVAudioSession 设为 Playback：
+  // 会压过 WebRTC/LiveKit 的 PlayAndRecord，导致 iOS 通话无声音。
   // 参考 https://github.com/jazzychad/PiPBugDemo
 
   FlutterMethodChannel *channel =
@@ -69,7 +43,10 @@
     result([@"iOS "
         stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
   } else if ([@"createPipContentView" isEqualToString:call.method]) {
-    [NativePlugin updateAudioSession];
+    // PiP 宽高比（9:16 / 1:1）与捏合缩放由 packages/pip 的 PipOptions.isVideoCall
+    // 在 PipController（iOS）中处理；此处仅负责通话内容渲染视图。
+    // 切勿在此处把 AVAudioSession 改为 Playback：会与 LiveKit/WebRTC 的
+    // PlayAndRecord 争抢，导致语音/视频通话双方听不到声音（见 registerWithRegistrar 注释）。
     PlayerView *playerView = nil;
     if ([call.arguments isKindOfClass:[NSDictionary class]]) {
       NSDictionary *args = call.arguments;
